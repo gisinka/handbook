@@ -55,13 +55,13 @@ def select_handbook():
         print('Текущий справочник изменён.', end='\n')
     else:
         print('Справочника с таким именем не существует. Создать его? (y/n)', end='\n')
-        answer = input()
-        if answer == 'y':
+        command = input()
+        if command == 'y':
             currentHandbook = handbook_name
             handbook = open(f"{handbook_name}.hdb", "a")
             handbook.close()
             print('Справочник создан.', end='\n')
-        if answer == 'n':
+        if command == 'n':
             return
 
 
@@ -76,7 +76,7 @@ def add():
             storage.append(new_item)
     for items in storage:
         handbook = open(f'{currentHandbook}.hdb', 'a')
-        handbook.write(items.__str__() + '\n')
+        handbook.write(items.__str__ + '\n')
         handbook.close()
 
 
@@ -93,7 +93,7 @@ def change_record():
                 storage.append(Record(new_record))
     for item in storage:
         handbook = open(f'{currentHandbook}.hdb', 'a')
-        handbook.write(item.__str__() + '\n')
+        handbook.write(item.__str__ + '\n')
         handbook.close()
 
 
@@ -116,7 +116,7 @@ def search():
     counter = 0
     for item in storage:
         if item.__contains__(searching_param):
-            print(item.__str__(), end='\n')
+            print(item.__str__, end='\n')
             counter += 1
     print('Найдено записей: ', counter, end='\n')
 
@@ -131,9 +131,8 @@ def remove_record():
             storage.remove(item)
             print('Запись удалена.', end='\n')
         handbook = open(f'{currentHandbook}.hdb', 'a')
-        handbook.write(item.__str__() + '\n')
+        handbook.write(item.__str__ + '\n')
         handbook.close()
-
 
 
 def validate_record(record):
