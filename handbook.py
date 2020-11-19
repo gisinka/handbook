@@ -1,5 +1,6 @@
 import os.path
 import re
+from record import Record
 
 
 def main():
@@ -67,87 +68,75 @@ def select_handbook():
 def add():
     global currentHandbook
     print('Введите через пробел имя, фамилию, номер телефона, город и e-mail:', end='\n')
-    record = input()
-    if is_correct_record(record):
-        handbook = open(currentHandbook + '.hdb', 'r')
-        records = handbook.read()
-        handbook.close()
-        if record in records:
-            print('Такая запись уже существует.', end='\n')
-            return
-        if record.split(' ')[4] in records:
-            print('Запись с таким e-mail уже существует.', end='\n')
-            return
+    input_str = input()
+    records, storage = read_handbook()
+    if validate_record(input_str):
+        new_item = Record(input_str)
+        if new_item.email not in records:
+            storage.append(new_item)
+    for items in storage:
         handbook = open(f'{currentHandbook}.hdb', 'a')
-        handbook.write(record + '\n')
+        handbook.write(items.__str__() + '\n')
         handbook.close()
-        print('Запись добавлена.', end='\n')
-    else:
-        print('Неверный ввод. Повторите попытку.')
 
 
 def change_record():
     print('Введите e-mail изменяемой записи:', end='\n')
     email = input()
+    records, storage = read_handbook()
+    for item in storage:
+        if item.email == email:
+            print('Введите новые параметры записи:', end='\n')
+            new_record = input()
+            if validate_record(new_record) and new_record not in records:
+                storage.remove(item)
+                storage.append(Record(new_record))
+    for item in storage:
+        handbook = open(f'{currentHandbook}.hdb', 'a')
+        handbook.write(item.__str__() + '\n')
+        handbook.close()
+
+
+def read_handbook():
+    storage = []
     handbook = open(f'{currentHandbook}.hdb', 'r')
-    records = handbook.read()
-    handbook.seek(0)
-    if email in records:
-        print('Введите новое значение:', end='\n')
-        changed_record = input()
-        if is_correct_record(changed_record):
-            records = handbook.readlines()
-            handbook.close()
-            handbook = open(f'{currentHandbook}.hdb', 'w')
-            for record in records:
-                if email in record:
-                    handbook.write(changed_record + '\n')
-                else:
-                    handbook.write(record + '\n')
-            print('Значение изменено.', end='\n')
-        else:
-            print('Неверный ввод. Повторите попытку.', end='\n')
-        return
-    print('Такой записи не существует.', end='\b')
+    records = handbook.readlines()
+    handbook.close()
+    for record in records:
+        if validate_record(record):
+            storage.append(Record(record))
+    return records, storage
 
 
 def search():
     global currentHandbook
     print('Введите один из параметров для поиска:', end='\n')
     searching_param = input()
-    found_records_count = 0
-    handbook = open(f'{currentHandbook}.hdb', 'r')
-    records = handbook.readlines()
-    for record in records:
-        if searching_param in record:
-            print(record)
-            found_records_count += 1
-    handbook.close()
-    print('Найдено записей: ', found_records_count, end='\n')
+    records, storage = read_handbook()
+    counter = 0
+    for item in storage:
+        if item.__contains__(searching_param):
+            print(item.__str__(), end='\n')
+            counter += 1
+    print('Найдено записей: ', counter, end='\n')
 
 
 def remove_record():
     global currentHandbook
     print('Введите e-mail удаляемой записи:', end='\n')
     email = input()
-    handbook = open(f'{currentHandbook}.hdb', 'r')
-    records = handbook.readlines()
-    handbook.close()
-    handbook = open(currentHandbook + '.hdb', 'w')
-    is_deleted = False
-    for record in records:
-        if email not in record:
-            handbook.write(record)
-        else:
-            is_deleted = True
-    handbook.close()
-    if is_deleted:
-        print('Запись удалена.', end='\n')
-    else:
-        print('Записи с таким e-mail не существует.', end='\n')
+    records, storage = read_handbook()
+    for item in storage:
+        if item.email == email:
+            storage.remove(item)
+            print('Запись удалена.', end='\n')
+        handbook = open(f'{currentHandbook}.hdb', 'a')
+        handbook.write(item.__str__() + '\n')
+        handbook.close()
 
 
-def is_correct_record(record):
+
+def validate_record(record):
     fields = record.split(' ')
     if len(fields) != 5:
         return False
