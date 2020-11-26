@@ -1,9 +1,6 @@
-<<<<<<< HEAD
 import re
 
 
-=======
->>>>>>> origin/main
 class Record(object):
 
     def __init__(self, record):
@@ -14,7 +11,6 @@ class Record(object):
         self.city = fields[3]
         self.email = fields[4]
 
-    @property
     def __str__(self):
         return f'{self.name} {self.surname} {self.number} {self.city} {self.email}'
 
