@@ -1,15 +1,17 @@
 import os.path
-import re
-from record import Record
+
+from storage import *
 
 
 def main():
+    select_handbook()
     while True:
         if choose_action() == -1:
             break
 
 
 def choose_action():
+    global currentHandbook
     print('Комманды:', end='\n')
     print('Создать справочник - 1', end='\n')
     print('Сменить справочник - 2', end='\n')
@@ -17,6 +19,7 @@ def choose_action():
     print('Изменить запись - 4', end='\n')
     print('Найти запись - 5', end='\n')
     print('Удалить запись - 6', end='\n')
+    print('Вывести содержимое справочника - 7', end='\n')
     print('Выйти - 0', end='\n')
     command = int(input())
     if command == 1:
@@ -24,37 +27,46 @@ def choose_action():
     elif command == 2:
         select_handbook()
     elif command == 3:
-        add()
+        currentHandbook.add_record()
     elif command == 4:
-        change_record()
+        currentHandbook.change_record()
     elif command == 5:
-        search()
+        currentHandbook.search_records()
     elif command == 6:
-        remove_record()
+        currentHandbook.remove_record()
+    elif command == 7:
+        currentHandbook.print_storage()
     elif command == 0:
+        currentHandbook.save_on_disk()
         return -1
 
 
 def create_handbook():
     global currentHandbook
-    handbook_name = input("Введите имя справочника: ")
+    handbook_name = input("Введите имя нового справочника: ")
     if os.path.exists(os.path.abspath(handbook_name + '.hdb')):
         print('Справочник с таким именем уже существует.', end='\n')
-        return
-    currentHandbook = handbook_name
-    handbook = open(f"{handbook_name}.hdb", "a")
-    handbook.close()
-    print('Справочник создан.', end='\n')
+    currentHandbook = Storage(handbook_name)
+    print('Справочник выбран в качестве текущего.', end='\n')
 
 
 def select_handbook():
     global currentHandbook
-    handbook_name = input("Введите имя нужного справочника: ")
+    handbook_name = input("Введите имя справочника для выбора: ")
     if os.path.exists(os.path.abspath(handbook_name + '.hdb')):
-        currentHandbook = handbook_name
+        if currentHandbook is not None:
+            currentHandbook.save_on_disk()
+        currentHandbook = Storage(handbook_name)
         print('Текущий справочник изменён.', end='\n')
     else:
         print('Справочника с таким именем не существует. Создать его? (y/n)', end='\n')
+<<<<<<< HEAD
+        if input() == 'y':
+            if currentHandbook is not None:
+                currentHandbook.save_on_disk()
+            currentHandbook = Storage(handbook_name)
+            print('Справочник создан.', end='\n')
+=======
         command = input()
         if command == 'y':
             currentHandbook = handbook_name
@@ -145,7 +157,8 @@ def validate_record(record):
     is_correct_city = bool(re.match(r"^[а-яА-Я\- ]+$", fields[3]))
     is_correct_email = bool(re.match(r"[^@\s]+@[^@\s]+\.[^@\s]+", fields[4]))
     return is_correct_name and is_correct_surname and is_correct_number and is_correct_city and is_correct_email
+>>>>>>> origin/main
 
 
-currentHandbook = ''
+currentHandbook = None
 main()
