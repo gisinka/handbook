@@ -60,13 +60,11 @@ def select_handbook():
         print('Текущий справочник изменён.', end='\n')
     else:
         print('Справочника с таким именем не существует. Создать его? (y/n)', end='\n')
-<<<<<<< HEAD
         if input() == 'y':
             if currentHandbook is not None:
                 currentHandbook.save_on_disk()
             currentHandbook = Storage(handbook_name)
             print('Справочник создан.', end='\n')
-=======
         command = input()
         if command == 'y':
             currentHandbook = handbook_name
@@ -157,7 +155,6 @@ def validate_record(record):
     is_correct_city = bool(re.match(r"^[а-яА-Я\- ]+$", fields[3]))
     is_correct_email = bool(re.match(r"[^@\s]+@[^@\s]+\.[^@\s]+", fields[4]))
     return is_correct_name and is_correct_surname and is_correct_number and is_correct_city and is_correct_email
->>>>>>> origin/main
 
 
 currentHandbook = None
